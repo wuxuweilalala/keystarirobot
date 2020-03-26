@@ -1,9 +1,10 @@
 <template>
     <section class="centerContent">
         <RouteHeader />
-       <div class="mapWrapper" id="map" ref="earthContainer">
-           <!--<div class="three" ref="container" ></div>-->
+       <div class="mapWrapper" id="map" v-show="twoShow">
+
         </div>
+        <div class="mapWrapper" id="threeMap"   v-show="!twoShow" ></div>
         <div class="equipmentWrapper">
             <swiper class="swiper" :options="swiperOption">
                 <swiper-slide
@@ -42,9 +43,10 @@
     import View from 'ol/View';
     import TileLayer from 'ol/layer/Tile';
     import GPX from 'ol/format/GPX';
+    import KML from 'ol/format/KML';
     import { Vector as VectorLayer} from 'ol/layer';
     import {OSM, TileDebug,TileJSON, Vector as VectorSource} from 'ol/source';
-    import {Fill, Icon, Stroke, Style,Circle as CircleStyle} from 'ol/style';
+    import {Fill, Text, Icon, Stroke, Style,Circle as CircleStyle} from 'ol/style';
     import XYZ from 'ol/source/XYZ';
     export default {
         name: "CenterContent",
@@ -100,20 +102,50 @@
                 renderer: null,
                 mesh: null,
                 viewer:undefined,
+                twoShow:false,
+                currentTower:[]
             }
         },
         mounted() {
-            // this.mapInit();
-            this.webglInit2();
+            if(this.twoShow) {
+                this.mapInit();
+            }else {
+                this.webglInit2();
+            }
+
         },
          methods:{
              mapInit(){
                  const point = JSON.parse(window.localStorage.getItem('point'));
-                 const postitionArr = [];
+                 const positionArr = [];
+                 const pointFeatureArr = [];
+
                  for(let i of point) {
-                     postitionArr.push([i.position.z,i.position.y])
+                     positionArr.push(fromLonLat(i.position));
+                     const a = new Feature(new Point(fromLonLat(i.position)));
+                     // 设置文字
+                     a.setStyle(new Style({
+                         text: new Text({
+                             font: '12px Microsoft YaHei',
+                             text: i.name,
+                             fill: new Fill({
+                                 color: '#fff'
+                             })
+                         }),
+                         image:new Icon ({
+                             anchorXUnits: 'pixels',
+                             anchorYUnits: 'pixels',
+                             crossOrigin: 'anonymous',
+                             color: [255, 255, 0, 1],
+                             scale:0.09,
+                             src: require('@/assets/icons/edit.svg')
+                         }),
+                     }) )
+                     // 设置点
+                     pointFeatureArr.push(a)
                  }
-                 console.log(postitionArr);
+                 console.log(positionArr);
+                 // 离线地图
                  const raster = new TileLayer({
                      source: new XYZ({
                          tileUrlFunction: function (tileCoord, pixelRatio, proj) {
@@ -133,28 +165,20 @@
                          maxZoom: 20
                      })
                  });
-                 const london = fromLonLat([120.153576,29.287459]);//浙江中心的坐标
-                 console.log( fromLonLat([120.19, 30.26]));
+                 // 设置黄线
                  const lineFeature = new Feature(
-                     new LineString([london, fromLonLat([120.19, 30.26])]));
-                 const pointFeature = new Feature(new Point(london));
-                 const pointFeature1 = new Feature(new Point(fromLonLat([120.19, 30.26])));
+                     new LineString([...positionArr]));
+                 // 初始化地图
                  const map = new Map({
                      layers: [raster,   new VectorLayer({
                          source: new VectorSource({
-                             features: [lineFeature,pointFeature,pointFeature1]
+                             features: [lineFeature,...pointFeatureArr]
+                             //url: 'http://192.168.1.242:3000/model/doc.kml',
+                            // format: new KML()
                          }),
                          style: new Style({
-                             image:new Icon ({
-                                 anchorXUnits: 'pixels',
-                                 anchorYUnits: 'pixels',
-                                 crossOrigin: 'anonymous',
-                                 color: [255, 255, 0, 1],
-                                 scale:0.1,
-                                 src: require('@/assets/icons/edit.svg')
-                             }),
                              stroke: new Stroke({
-                                 width: 10,
+                                 width:3,
                                  color: [255, 255, 0, 1]
                              }),
                          })
@@ -162,16 +186,25 @@
                      controls:[],
                      target: 'map',
                      view: new View({
-                         center: fromLonLat([120.153576,29.287459]),
-                         zoom: 8,
+                         center: positionArr[30],
+                         zoom: 13,
                          minZoom: 8,
                          // [minx, miny, maxx, maxy] 浙江省
                          // lng = [118.01, 123.10]  # 经度
                          // lat = [27.045, 31.42]   # 纬度
-                         extent: [fromLonLat([118.01])[0], fromLonLat([27.045])[0],
-                             fromLonLat([123.50])[0], fromLonLat([31.42])[0]]
+                         /*extent: [fromLonLat([118.01])[0], fromLonLat([27.045])[0],
+                             fromLonLat([123.50])[0], fromLonLat([31.42])[0]]*/
                      })
                  });
+
+                 // 监听点的点击事件
+                 map.on('click',(e)=>{
+                     if(map.hasFeatureAtPixel(e.pixel)) {
+                         this.webglInit2();
+                         this.twoShow = false;
+                     }
+                 })
+
              },
              webglInit(){
                 var viewer = new Cesium.Viewer('map')
@@ -201,15 +234,17 @@
              webglInit1(){
                  function createModel(url, x, y, height) {
                      const position = Cesium.Cartesian3.fromDegrees(x, y, height);
+                     console.log(position);
                      viewer.entities.add({
                          name : url,
                          position : position,
                          model : {
                              uri : url
-                         }
+                         },
+
                      });
                  }
-                 const viewer = new Cesium.Viewer('map')
+                 const viewer = new Cesium.Viewer('threeMap')
                  const scene = viewer.scene;
                  const clock = viewer.clock;
                  const numberOfBalloons = 13;
@@ -220,12 +255,10 @@
                  const url = 'http://192.168.1.242:3000/model/tower/tower.gltf';
                  for (let i = 0; i < numberOfBalloons; ++i) {
                      const lon = initialLon + i * lonIncrement;
-                     createModel(url, lon, lat, height);
+                     createModel(url, lon, lat, 0);
                  }
                  const target = Cesium.Cartesian3.fromDegrees(initialLon + lonIncrement, lat, height + 7.5);
                  const offset = new Cesium.Cartesian3(-37.048378684557974, -24.852967044804245,10.352023653686047);
-
-
 
                  let entity;
                  let positionProperty;
@@ -264,60 +297,87 @@
 
              },
              webglInit2(){
-                 const viewer = new Cesium.Viewer('map')
-                 var options = {
+                 const viewer = new Cesium.Viewer('threeMap');
+                 const tower = 'http://192.168.1.242:3000/model/tower/tower.gltf';
+                 const target = Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 7.5);
+                 const offset = new Cesium.Cartesian3(-37.048378684557974, -24.852967044804245,10.352023653686047);
+                 // 创建飞机
+                 createRobot()
+                 function createRobot(){
+                     let heading = Cesium.Math.toRadians(135);
+                     let pitch = 0;
+                     let roll = 0;
+                     let hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+                     let orientation = Cesium.Transforms.headingPitchRollQuaternion(Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5), hpr);
+                     viewer.entities.add({
+                         name : 'http://192.168.1.242:3000/model/CesiumAir/Cesium_Air.glb',
+                         position : Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5),
+                         orientation,
+                         path : {
+                             resolution : 1,
+                             material : new Cesium.PolylineGlowMaterialProperty({
+                                 glowPower : 0.1,
+                                 color : Cesium.Color.YELLOW
+                             }),
+                             width : 10
+                         },
+                         model : {
+                             uri : 'http://192.168.1.242:3000/model/CesiumAir/Cesium_Air.glb',
+                         }
+                     });
+                 }
+                 const options = {
                      camera : viewer.scene.camera,
                      canvas : viewer.scene.canvas,
-                     clampToGround: true //开启贴地
+                     clampToGround: false //开启贴地
                  };
                  const a = viewer.dataSources.add(Cesium.KmlDataSource.load( 'http://192.168.1.242:3000/model/luowei.kmz', options));
-                 a.then( viewer.flyTo(a));
-
+                 /*a.then( viewer.flyTo(a));*/
                  a.then(function(dataSource) {
-                     console.log(dataSource._camera.position);
                      const entities = dataSource.entities.values;
-                     console.log(entities);
-                     let pointArray = [];
+                     const pointArray = [];
+                     const pointArray1 = [];
                      for (let i = 0; i < entities.length; i++) {
                          const entity = entities[i];
                          if(entity.position) {
-                             pointArray.push({name:entity._name,position:entity.position._value})
+                             const ellipsoid=viewer.scene.globe.ellipsoid;
+                             const cartographic=ellipsoid.cartesianToCartographic(entity.position._value);
+                             const a = [Cesium.Math.toDegrees(cartographic.longitude),Cesium.Math.toDegrees(cartographic.latitude)];
+                             pointArray.push({name:entity._name,position:entity.position._value});
+                             pointArray1.push({name:entity._name,position:a});
                          }
-                         /*   var cartographicPosition = Cesium.Cartographic.fromCartesian(entity.position.getValue(Cesium.JulianDate.now()));
-                            var latitude = Cesium.Math.toDegrees(cartographicPosition.latitude);
-                            var longitude = Cesium.Math.toDegrees(cartographicPosition.longitude);
-                            console.log(latitude);
-                            console.log(longitude);*/
-                         // 设置每个entity的样式
-                       /*  entity.billboard.disableDepthTestDistance = Number.POSITIVE_INFINITY; //去掉地形遮挡
-                         entity.billboard.color = Cesium.Color.WHITE;
-                         entity.billboard.image =  '../data/kml/img.jpg';*/
                      }
-                     window.localStorage.setItem('point',JSON.stringify(pointArray))
-                 });
+                     window.localStorage.setItem('point',JSON.stringify(pointArray1))
+                     for(let i of pointArray.slice(0,10)) {
+                         // 创建模型
+                         viewer.entities.add({
+                             name : tower,
+                             position : i.position,
+                             model : {
+                                 uri : tower
+                             }
+                         });
 
-
-             },
-             createModel(url, height) {
-                 this.viewer.entities.removeAll();
-                 let position = Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, height);
-                 let heading = Cesium.Math.toRadians(135);
-                 let pitch = 0;
-                 let roll = 0;
-                 let hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
-                 let orientation = Cesium.Transforms.headingPitchRollQuaternion(position, hpr);
-                 console.log(this.viewer.entities)
-                 let entity = this.viewer.entities.add({
-                     name : url,
-                     position : position,
-                     orientation : orientation,
-                     model : {
-                         uri : url,
-                         minimumPixelSize : 128,
-                         maximumScale : 20000
                      }
+                     // 顶点连线
+                     const lineArr = []
+                     for(let i of pointArray1) {
+                         const position = Cesium.Cartesian3.fromDegrees(i.position[0], i.position[1], 50);
+                         console.log(position);
+                         lineArr.push(position)
+
+                     }
+                     viewer.entities.add({
+                         polyline : {
+                             // This callback updates positions each frame.
+                             show:true,
+                             positions : lineArr,
+                             width : 1,
+                             material : Cesium.Color.WHITE
+                         }
+                     });
+                     viewer.scene.camera.lookAt(target,offset);
                  });
-                 this.viewer.trackedEntity = entity;
              }
          }
     }
