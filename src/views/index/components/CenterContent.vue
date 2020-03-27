@@ -1,10 +1,27 @@
 <template>
     <section class="centerContent">
         <RouteHeader />
-       <div class="mapWrapper" id="map" v-show="twoShow">
+        <div class="mapWrapper">
+            <div class="video"  v-show="videoShow">
+                <video muted="" autoplay="" loop="" crossorigin="" controls="" controlsList="nodownload">
+                    <source src="https://sandcastle.cesium.com/SampleData/videos/big-buck-bunny_trailer.mov" type="video/quicktime">
+                    Your browser does not support the <code>video</code> element.
+                </video>
+            </div>
+            <div :class="[{miniTwoMap:videoShow},'twoMap']" v-show="twoShow || videoShow"  @click.stop.prevent="twoMapShow">
+                <div id="map" >
 
+                </div>
+            </div>
+            <div class="threeMap" id="threeMap"   v-show="threeShow" >
+                <div class="trailer" v-show="miniVideoShow">
+                    <video id="trailer" muted="" autoplay="" loop="" crossorigin="" controls="" controlsList="nodownload">
+                        <source src="https://sandcastle.cesium.com/SampleData/videos/big-buck-bunny_trailer.mov" type="video/quicktime">
+                        Your browser does not support the <code>video</code> element.
+                    </video>
+                </div>
+            </div>
         </div>
-        <div class="mapWrapper" id="threeMap"   v-show="!twoShow" ></div>
         <div class="equipmentWrapper">
             <swiper class="swiper" :options="swiperOption">
                 <swiper-slide
@@ -39,11 +56,13 @@
     import Map from 'ol/Map';
     import Feature from 'ol/Feature';
     import {LineString, Point, Polygon} from 'ol/geom';
+    import {defaults as defaultInteractions, Pointer as PointerInteraction} from 'ol/interaction';
     import {fromLonLat} from 'ol/proj';
     import View from 'ol/View';
     import TileLayer from 'ol/layer/Tile';
     import GPX from 'ol/format/GPX';
     import KML from 'ol/format/KML';
+    import Select from 'ol/interaction/Select';
     import { Vector as VectorLayer} from 'ol/layer';
     import {OSM, TileDebug,TileJSON, Vector as VectorSource} from 'ol/source';
     import {Fill, Text, Icon, Stroke, Style,Circle as CircleStyle} from 'ol/style';
@@ -102,109 +121,131 @@
                 renderer: null,
                 mesh: null,
                 viewer:undefined,
-                twoShow:false,
+                twoShow:true,
+                miniTwoShow:false,
+                videoShow:false,
+                threeShow:false,
+                miniVideoShow:false,
                 currentTower:[]
             }
         },
         mounted() {
-            if(this.twoShow) {
-                this.mapInit();
-            }else {
-                this.webglInit2();
-            }
-
+            this.twoShow ? this.mapInit() : this.webglInit2();
         },
          methods:{
+             twoMapShow(){
+                 this.twoShow = true;
+                 this.videoShow = false;
+             },
              mapInit(){
-                 const point = JSON.parse(window.localStorage.getItem('point'));
-                 const positionArr = [];
+                     const point = JSON.parse(window.localStorage.getItem('point'));
+                     const positionArr = [];
+
                  const pointFeatureArr = [];
-
-                 for(let i of point) {
-                     positionArr.push(fromLonLat(i.position));
-                     const a = new Feature(new Point(fromLonLat(i.position)));
-                     // 设置文字
-                     a.setStyle(new Style({
-                         text: new Text({
-                             font: '12px Microsoft YaHei',
-                             text: i.name,
-                             fill: new Fill({
-                                 color: '#fff'
-                             })
-                         }),
-                         image:new Icon ({
-                             anchorXUnits: 'pixels',
-                             anchorYUnits: 'pixels',
-                             crossOrigin: 'anonymous',
-                             color: [255, 255, 0, 1],
-                             scale:0.09,
-                             src: require('@/assets/icons/edit.svg')
-                         }),
-                     }) )
-                     // 设置点
-                     pointFeatureArr.push(a)
-                 }
-                 console.log(positionArr);
-                 // 离线地图
-                 const raster = new TileLayer({
-                     source: new XYZ({
-                         tileUrlFunction: function (tileCoord, pixelRatio, proj) {
-                             var z = tileCoord[0];
-                             var x = tileCoord[1];
-                             var y = tileCoord[2];
-
-                             // 百度瓦片服务url将负数使用M前缀来标识
-                             if (x < 0) {
-                                 x = -x;
-                             }
-                             if (y < 0) {
-                                 y = -y;
-                             }
-                             return "http://192.168.1.146:8000/wx/" + z + "/" + x + "/" + y + "/";
-                         },
-                         maxZoom: 20
-                     })
-                 });
-                 // 设置黄线
-                 const lineFeature = new Feature(
-                     new LineString([...positionArr]));
-                 // 初始化地图
-                 const map = new Map({
-                     layers: [raster,   new VectorLayer({
-                         source: new VectorSource({
-                             features: [lineFeature,...pointFeatureArr]
-                             //url: 'http://192.168.1.242:3000/model/doc.kml',
-                            // format: new KML()
-                         }),
-                         style: new Style({
-                             stroke: new Stroke({
-                                 width:3,
-                                 color: [255, 255, 0, 1]
+                     let i = 0;
+                     for(let i of point) {
+                         positionArr.push(fromLonLat(i.position));
+                         const a = new Feature(new Point(fromLonLat(i.position)))
+                         a.sb = 'sb';
+                         // 设置文字
+                         a.setStyle(new Style({
+                             text: new Text({
+                                 font: '12px Microsoft YaHei',
+                                 text: i.name,
+                                // offsetY:-10,
+                                 id:1111,
+                                 fill: new Fill({
+                                     color: '#fff'
+                                 })
                              }),
-                         })
-                     })],
-                     controls:[],
-                     target: 'map',
-                     view: new View({
-                         center: positionArr[30],
-                         zoom: 13,
-                         minZoom: 8,
-                         // [minx, miny, maxx, maxy] 浙江省
-                         // lng = [118.01, 123.10]  # 经度
-                         // lat = [27.045, 31.42]   # 纬度
-                         /*extent: [fromLonLat([118.01])[0], fromLonLat([27.045])[0],
-                             fromLonLat([123.50])[0], fromLonLat([31.42])[0]]*/
-                     })
-                 });
-
-                 // 监听点的点击事件
-                 map.on('click',(e)=>{
-                     if(map.hasFeatureAtPixel(e.pixel)) {
-                         this.webglInit2();
-                         this.twoShow = false;
+                             image:new Icon ({
+                                 anchorXUnits: 'fraction',
+                                 anchorYUnits: 'fraction',
+                                 //crossOrigin: 'anonymous',
+                                 color: [255, 255, 0, 1],
+                                 scale:0.09,
+                                 name:'icon',
+                                 id:123456,
+                                 src: require('@/assets/icons/edit.svg')
+                             }),
+                         }) )
+                         // 设置点
+                         pointFeatureArr.push(a)
                      }
-                 })
+                 console.log(positionArr);
+                     // 离线地图
+                     const raster = new TileLayer({
+                         source: new XYZ({
+                             tileUrlFunction: function (tileCoord, pixelRatio, proj) {
+                                 var z = tileCoord[0];
+                                 var x = tileCoord[1];
+                                 var y = tileCoord[2];
 
+                                 // 百度瓦片服务url将负数使用M前缀来标识
+                                 if (x < 0) {
+                                     x = -x;
+                                 }
+                                 if (y < 0) {
+                                     y = -y;
+                                 }
+                                 return "http://192.168.1.146:8000/wx/" + z + "/" + x + "/" + y + "/";
+                             },
+                             maxZoom: 20
+                         })
+                     });
+                     // 设置黄线
+                     const lineFeature = new Feature(
+                         new LineString([...positionArr]));
+                     // 初始化地图
+                     const map = new Map({
+                         layers: [raster,   new VectorLayer({
+                             source: new VectorSource({
+                                 features: [lineFeature,...pointFeatureArr]
+                                 //url: 'http://192.168.1.242:3000/model/doc.kml',
+                                 // format: new KML()
+                             }),
+                             style: new Style({
+                                 stroke: new Stroke({
+                                     width:3,
+                                     color: [255, 255, 0, 1]
+                                 }),
+                             })
+                         })],
+                         controls:[],
+                         target: 'map',
+                         view: new View({
+                             center: positionArr[30],
+                             zoom: 13,
+                             minZoom: 8,
+                             // [minx, miny, maxx, maxy] 浙江省
+                             // lng = [118.01, 123.10]  # 经度
+                             // lat = [27.045, 31.42]   # 纬度
+                             /*extent: [fromLonLat([118.01])[0], fromLonLat([27.045])[0],
+                                 fromLonLat([123.50])[0], fromLonLat([31.42])[0]]*/
+                         })
+                     });
+
+                     // 监听点的点击事件
+                     map.on('singleclick',(e)=>{
+                         // e.stopPropagation();
+
+                         var feature = map.forEachFeatureAtPixel(e.pixel,
+                             function(feature) {
+                                 console.log(feature);
+                                 console.log(feature.style_.text_.text_);
+                                 return feature;
+                             });
+
+
+                         if(map.hasFeatureAtPixel(e.pixel)) {
+                             console.log(e);
+                             //console.log(e);
+                             //this.webglInit2();
+                              // this.twoShow = false;
+                               //this.videoShow = true;
+                              //this.threeShow = true;
+                         }
+                     });
              },
              webglInit(){
                 var viewer = new Cesium.Viewer('map')
@@ -234,7 +275,6 @@
              webglInit1(){
                  function createModel(url, x, y, height) {
                      const position = Cesium.Cartesian3.fromDegrees(x, y, height);
-                     console.log(position);
                      viewer.entities.add({
                          name : url,
                          position : position,
@@ -252,7 +292,7 @@
                  const initialLon = -122.99875;
                  const lat = 44.0503706;
                  const height = 7.5;
-                 const url = 'http://192.168.1.242:3000/model/tower/tower.gltf';
+                 const url = 'http://192.168.1.242:3000/model/tower-processed.glb';
                  for (let i = 0; i < numberOfBalloons; ++i) {
                      const lon = initialLon + i * lonIncrement;
                      createModel(url, lon, lat, 0);
@@ -267,11 +307,11 @@
                      entity = dataSource.entities.getById('CesiumMilkTruck');
                      positionProperty = entity.position;
                  });
-                 const tileset = scene.primitives.add(
+               /*  const tileset = scene.primitives.add(
                      new Cesium.Cesium3DTileset({
                          url: Cesium.IonResource.fromAssetId(40866)
                      })
-                 );
+                 );*/
 
                  viewer.camera.setView({
                      destination: new Cesium.Cartesian3(-2500628.4716683696, -3850998.027340732, 4412185.44382818),
@@ -297,46 +337,36 @@
 
              },
              webglInit2(){
-                 const viewer = new Cesium.Viewer('threeMap');
-                 const tower = 'http://192.168.1.242:3000/model/tower/tower.gltf';
+                 const viewer = new Cesium.Viewer('threeMap',{
+                    /* animation:false,
+                     shouldAnimate:true,
+                     baseLayerPicker:false*/
+                 });
+                 const tower = 'http://192.168.1.242:3000/model/tower-processed.glb';
                  const target = Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 7.5);
                  const offset = new Cesium.Cartesian3(-37.048378684557974, -24.852967044804245,10.352023653686047);
-                 // 创建飞机
-                 createRobot()
-                 function createRobot(){
-                     let heading = Cesium.Math.toRadians(135);
-                     let pitch = 0;
-                     let roll = 0;
-                     let hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
-                     let orientation = Cesium.Transforms.headingPitchRollQuaternion(Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5), hpr);
-                     viewer.entities.add({
-                         name : 'http://192.168.1.242:3000/model/CesiumAir/Cesium_Air.glb',
-                         position : Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5),
-                         orientation,
-                         path : {
-                             resolution : 1,
-                             material : new Cesium.PolylineGlowMaterialProperty({
-                                 glowPower : 0.1,
-                                 color : Cesium.Color.YELLOW
-                             }),
-                             width : 10
-                         },
-                         model : {
-                             uri : 'http://192.168.1.242:3000/model/CesiumAir/Cesium_Air.glb',
-                         }
-                     });
-                 }
+
                  const options = {
                      camera : viewer.scene.camera,
                      canvas : viewer.scene.canvas,
                      clampToGround: false //开启贴地
                  };
-                 const a = viewer.dataSources.add(Cesium.KmlDataSource.load( 'http://192.168.1.242:3000/model/luowei.kmz', options));
-                 /*a.then( viewer.flyTo(a));*/
-                 a.then(function(dataSource) {
+                 // 引入 kmz 地图
+                 const kmzMap = viewer.dataSources.add(Cesium.KmlDataSource.load( 'http://192.168.1.242:3000/model/luowei.kmz', options));
+                 /*kmzMap.then( viewer.flyTo(kmzMap));*/
+                 kmzMap.then(function(dataSource) {
                      const entities = dataSource.entities.values;
                      const pointArray = [];
                      const pointArray1 = [];
+                     const property = new Cesium.SampledPositionProperty();
+                     const start = Cesium.JulianDate.fromDate(new Date(2020, 3, 26, 18));
+                     const stop = Cesium.JulianDate.addSeconds(start, 1000, new Cesium.JulianDate());
+                     viewer.clock.startTime = start.clone();
+                     viewer.clock.stopTime = stop.clone();
+                     viewer.clock.currentTime = start.clone();
+                     viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; //Loop at the end
+                     viewer.clock.multiplier = 1;
+                     viewer.clock.shouldAnimate = true;
                      for (let i = 0; i < entities.length; i++) {
                          const entity = entities[i];
                          if(entity.position) {
@@ -348,34 +378,72 @@
                          }
                      }
                      window.localStorage.setItem('point',JSON.stringify(pointArray1))
-                     for(let i of pointArray.slice(0,10)) {
-                         // 创建模型
+                     // 创建电塔模型
+                     let towerId = 0;
+                     for(let i of pointArray) {
                          viewer.entities.add({
-                             name : tower,
+                             name : towerId+=1,
                              position : i.position,
                              model : {
                                  uri : tower
                              }
                          });
-
                      }
-                     // 顶点连线
+
                      const lineArr = []
+                     let num = 0;
                      for(let i of pointArray1) {
                          const position = Cesium.Cartesian3.fromDegrees(i.position[0], i.position[1], 50);
-                         console.log(position);
                          lineArr.push(position)
-
+                         // 增加机器人运动轨迹以及机器人高度
+                         property.addSample(Cesium.JulianDate.addSeconds(start, num+=10, new Cesium.JulianDate()),
+                             Cesium.Cartesian3.fromDegrees(i.position[0], i.position[1], 48));
                      }
+                     // 灯塔顶点连线
                      viewer.entities.add({
                          polyline : {
-                             // This callback updates positions each frame.
                              show:true,
                              positions : lineArr,
                              width : 1,
                              material : Cesium.Color.WHITE
                          }
                      });
+                     // 创建机器人
+                     createRobot()
+                     function createRobot(){
+                         // 调整机器人方向
+                         let heading = Cesium.Math.toRadians(160);
+                         let pitch = 0;
+                         let roll = 0;
+                         let hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+                         const robotUrl = 'http://192.168.1.242:3000/model/robot-processed.glb'
+                         let orientation = Cesium.Transforms.headingPitchRollQuaternion(Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5), hpr);
+                         const robot = viewer.entities.add({
+                             name : 'robot',
+                             position: property,
+                             availability : new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
+                                 start : start,
+                                 stop : stop
+                             })]),
+                             //position : Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5),
+                             orientation: new Cesium.VelocityOrientationProperty(property),
+                             model : {
+                                 uri : robotUrl,
+                                 scale:0.005,
+                             }
+                         });
+                         viewer.trackedEntity = robot;
+                     }
+
+                     // 模型点击事件
+                     const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+                     handler.setInputAction(function(e) {
+                         const pick = viewer.scene.pick(e.position)
+
+                         if(typeof pick.id.name  === 'number') {
+                             console.log(pick);
+                         }
+                     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
                      viewer.scene.camera.lookAt(target,offset);
                  });
              }
@@ -384,6 +452,21 @@
 </script>
 
 <style lang="scss" scoped>
+    *::-webkit-media-controls-panel {
+        display: none!important;
+        -webkit-appearance: none;
+    }
+
+    *::--webkit-media-controls-play-button {
+        display: none!important;
+        -webkit-appearance: none;
+    }
+
+
+    *::-webkit-media-controls-start-playback-button {
+        display: none!important;
+        -webkit-appearance: none;
+    }
     .centerContent {
         width: 69.2vw;
         margin-right: 1vw;
@@ -392,15 +475,52 @@
             margin: 1.9vh 0 1.85vh 0;
             position: relative;
             z-index: 0;
+            .video {
+                border: 1px solid red;
+                width: 100%;
+                height: 100%;
+                video {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+            .twoMap {
+                width: 100%;
+                height: 100%;
+                #map {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+            .threeMap {
+                width: 100%;
+                height: 100%;
+            }
             /deep/canvas {
                 width: 100% !important;
                 height: 100%!important;
             }
-            .three {
+            .miniTwoMap {
                 position: absolute;
-                width: 100%;
-                height: 100%;
+                width: 10.4vw;
+                height: 10.5vh;
+                right: 1.3vw;
+                bottom: 0.6vw;
+                border: 1px solid red;
                 z-index: 1;
+            }
+            .trailer {
+                position: absolute;
+                width: 10.4vw;
+                height: 10.5vh;
+                right: 1.3vw;
+                bottom: 0.6vw;
+                border: 1px solid red;
+                z-index: 1;
+                #trailer {
+                    width: 100%;
+                    height: 100%;
+                }
             }
         }
         .equipmentWrapper {
