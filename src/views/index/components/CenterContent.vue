@@ -118,10 +118,10 @@
                 renderer: null,
                 mesh: null,
                 viewer:undefined,
-                twoShow:false,
+                twoShow:true,
                 miniTwoShow:false,
                 videoShow:false,
-                threeShow:true,
+                threeShow:false,
                 miniVideoShow:false,
                 currentTower:[]
             }
@@ -135,8 +135,8 @@
                  this.videoShow = false;
              },
              mapInit(){
-                     const point = JSON.parse(window.localStorage.getItem('point'));
-                     const positionArr = [];
+                 const point = JSON.parse(window.localStorage.getItem('point'));
+                 const positionArr = [];
                  const pointFeatureArr = [];
                      for(let i of point) {
                          positionArr.push(fromLonLat(i.position));
@@ -186,8 +186,8 @@
                          })
                      });
                      // 设置黄线
-                     const lineFeature = new Feature(
-                         new LineString([...positionArr]));
+                 const lineFeature = new Feature(
+                     new LineString([...positionArr]));
                      // 初始化地图
                      const map = new Map({
                          layers: [raster,   new VectorLayer({
@@ -345,6 +345,9 @@
                      homeButton:false,       //是否显示home键
                      geocoder:false,         //是否显示地名查找控件        如果设置为true，则无法查询
                      sceneModePicker:false,  //是否显示投影方式控件  三维/二维
+                     /*imageryProvider:new Cesium.UrlTemplateImageryProvider({   // 离线地图
+                         url:'http://192.168.1.146:8000/wx/{z}/{x}/{y}/',
+                     })*/
                  });
                  viewer._cesiumWidget._creditContainer.style.display = "none";
                  const tower = 'http://192.168.1.242:3000/model/tower-processed.glb';
@@ -424,7 +427,7 @@
                          let orientation = Cesium.Transforms.headingPitchRollQuaternion(Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5), hpr);
                          const robot = viewer.entities.add({
                              name : 'robot',
-                             position: property,
+                            // position: property,
                              availability : new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
                                  start : start,
                                  stop : stop
