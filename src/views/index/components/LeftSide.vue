@@ -1,7 +1,7 @@
 <template>
     <section class="leftSide">
         <div class="topList">
-            <SonHeader name="线路信息"  />
+            <SonHeader name="线路信息"  rightIcon="left" />
             <div class="listTitle">
                 <span>路段名称</span>
                 <span>塔杆数</span>

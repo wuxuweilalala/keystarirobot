@@ -50,7 +50,6 @@
 <script>
     import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
     import 'swiper/css/swiper.css'
-    import * as THREE from 'three';
     import RouteHeader from "@/components/RouteHeader";
     import 'ol/ol.css';
     import Map from 'ol/Map';
@@ -61,8 +60,6 @@
     import View from 'ol/View';
     import TileLayer from 'ol/layer/Tile';
     import GPX from 'ol/format/GPX';
-    import KML from 'ol/format/KML';
-    import Select from 'ol/interaction/Select';
     import { Vector as VectorLayer} from 'ol/layer';
     import {OSM, TileDebug,TileJSON, Vector as VectorSource} from 'ol/source';
     import {Fill, Text, Icon, Stroke, Style,Circle as CircleStyle} from 'ol/style';
@@ -121,10 +118,10 @@
                 renderer: null,
                 mesh: null,
                 viewer:undefined,
-                twoShow:true,
+                twoShow:false,
                 miniTwoShow:false,
                 videoShow:false,
-                threeShow:false,
+                threeShow:true,
                 miniVideoShow:false,
                 currentTower:[]
             }
@@ -140,9 +137,7 @@
              mapInit(){
                      const point = JSON.parse(window.localStorage.getItem('point'));
                      const positionArr = [];
-
                  const pointFeatureArr = [];
-                     let i = 0;
                      for(let i of point) {
                          positionArr.push(fromLonLat(i.position));
                          const a = new Feature(new Point(fromLonLat(i.position)))
@@ -153,7 +148,6 @@
                                  font: '12px Microsoft YaHei',
                                  text: i.name,
                                 // offsetY:-10,
-                                 id:1111,
                                  fill: new Fill({
                                      color: '#fff'
                                  })
@@ -165,14 +159,12 @@
                                  color: [255, 255, 0, 1],
                                  scale:0.09,
                                  name:'icon',
-                                 id:123456,
                                  src: require('@/assets/icons/edit.svg')
                              }),
                          }) )
                          // 设置点
                          pointFeatureArr.push(a)
                      }
-                 console.log(positionArr);
                      // 离线地图
                      const raster = new TileLayer({
                          source: new XYZ({
@@ -228,17 +220,22 @@
                      // 监听点的点击事件
                      map.on('singleclick',(e)=>{
                          // e.stopPropagation();
-
-                         var feature = map.forEachFeatureAtPixel(e.pixel,
-                             function(feature) {
+                         const feature = map.forEachFeatureAtPixel(e.pixel,
+                             feature=> {
                                  console.log(feature);
-                                 console.log(feature.style_.text_.text_);
+                                 if(!feature.style_){
+                                     this.twoShow = false;
+                                     this.threeShow = true;
+                                     this.webglInit2();
+                                 }
+                                 if(feature.style_.text_.text_) {
+                                     this.twoShow = false;
+                                     this.videoShow = true;
+                                 }
+
                                  return feature;
                              });
-
-
                          if(map.hasFeatureAtPixel(e.pixel)) {
-                             console.log(e);
                              //console.log(e);
                              //this.webglInit2();
                               // this.twoShow = false;
@@ -338,10 +335,18 @@
              },
              webglInit2(){
                  const viewer = new Cesium.Viewer('threeMap',{
-                    /* animation:false,
-                     shouldAnimate:true,
-                     baseLayerPicker:false*/
+                     animation:false,
+                     shouldAnimate:false,
+                     timeline: false,    //时间线不显示
+                     baseLayerPicker:false,
+                     fullscreenButton: false, //全屏按钮不显示
+                     navigationHelpButton:false,     //是否显示帮助信息控件
+                     infoBox: false,
+                     homeButton:false,       //是否显示home键
+                     geocoder:false,         //是否显示地名查找控件        如果设置为true，则无法查询
+                     sceneModePicker:false,  //是否显示投影方式控件  三维/二维
                  });
+                 viewer._cesiumWidget._creditContainer.style.display = "none";
                  const tower = 'http://192.168.1.242:3000/model/tower-processed.glb';
                  const target = Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 7.5);
                  const offset = new Cesium.Cartesian3(-37.048378684557974, -24.852967044804245,10.352023653686047);
@@ -354,7 +359,7 @@
                  // 引入 kmz 地图
                  const kmzMap = viewer.dataSources.add(Cesium.KmlDataSource.load( 'http://192.168.1.242:3000/model/luowei.kmz', options));
                  /*kmzMap.then( viewer.flyTo(kmzMap));*/
-                 kmzMap.then(function(dataSource) {
+                 kmzMap.then(dataSource=> {
                      const entities = dataSource.entities.values;
                      const pointArray = [];
                      const pointArray1 = [];
@@ -389,7 +394,6 @@
                              }
                          });
                      }
-
                      const lineArr = []
                      let num = 0;
                      for(let i of pointArray1) {
@@ -434,13 +438,12 @@
                          });
                          viewer.trackedEntity = robot;
                      }
-
                      // 模型点击事件
                      const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-                     handler.setInputAction(function(e) {
+                     handler.setInputAction(e=> {
                          const pick = viewer.scene.pick(e.position)
-
                          if(typeof pick.id.name  === 'number') {
+                             this.miniVideoShow = true;
                              console.log(pick);
                          }
                      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
@@ -452,6 +455,7 @@
 </script>
 
 <style lang="scss" scoped>
+    // 去除 video 标签的 button
     *::-webkit-media-controls-panel {
         display: none!important;
         -webkit-appearance: none;

@@ -116,38 +116,41 @@
                             title: {
                                 text: 200,
                                 textStyle: {
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontFamily: 'Microsoft Yahei',
                                     fontWeight: 'normal',
-                                    color: '#0b2b40',
+                                    color: 'rgb(11,43,64)',
                                     rich: {
                                         a: {
-                                            fontSize: 28,
+                                            fontSize: 14,
                                         }
                                     }
                                 },
                                 x: 'center',
-                                y: 'center'
+                                y: '30%'
                             },
                             series: [{
                                 type: 'liquidFill',
                                 radius: '80%',
                                 center: ['50%', '50%'],
                                 //  shape: 'roundRect',
-                                data: [0.5, 0.5, 0.5],
+                                data: [0.75, 0.75, 0.75],
                                 backgroundStyle: {
                                     color: {
                                         type: 'linear',
-                                        x: 1,
+                                        x: 0,
                                         y: 0,
-                                        x2: 1,
+                                        x2: 0,
                                         y2: 1,
                                         colorStops: [{
                                             offset: 1,
+                                            color: 'rgb(0,255,190)'
+                                        }, {
+                                            offset: 0.5,
                                             color: 'rgb(0, 0, 0)'
                                         }, {
                                             offset: 0,
-                                            color: '#00ffbe'
+                                            color: 'rgb(0,255,190)'
                                         }],
                                         globalCoord: false
                                     },
@@ -176,38 +179,41 @@
                             title: {
                                 text: 200,
                                 textStyle: {
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontFamily: 'Microsoft Yahei',
                                     fontWeight: 'normal',
-                                    color: '#0b2b40',
+                                    color: 'rgb(11,43,64)',
                                     rich: {
                                         a: {
-                                            fontSize: 28,
+                                            fontSize: 14,
                                         }
                                     }
                                 },
                                 x: 'center',
-                                y: 'center'
+                                y: '30%'
                             },
                             series: [{
                                 type: 'liquidFill',
                                 radius: '80%',
                                 center: ['50%', '50%'],
                                 //  shape: 'roundRect',
-                                data: [0.5, 0.5, 0.5],
+                                data: [0.75, 0.75, 0.75],
                                 backgroundStyle: {
                                     color: {
                                         type: 'linear',
-                                        x: 1,
+                                        x: 0,
                                         y: 0,
-                                        x2: 1,
+                                        x2: 0,
                                         y2: 1,
                                         colorStops: [{
                                             offset: 1,
+                                            color: 'rgb(0,255,190)'
+                                        }, {
+                                            offset: 0.5,
                                             color: 'rgb(0, 0, 0)'
                                         }, {
                                             offset: 0,
-                                            color: '#00ffbe'
+                                            color: 'rgb(0,255,190)'
                                         }],
                                         globalCoord: false
                                     },
@@ -236,38 +242,41 @@
                             title: {
                                 text: 200,
                                 textStyle: {
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontFamily: 'Microsoft Yahei',
                                     fontWeight: 'normal',
-                                    color: '#0b2b40',
+                                    color: 'rgb(11,43,64)',
                                     rich: {
                                         a: {
-                                            fontSize: 28,
+                                            fontSize: 14,
                                         }
                                     }
                                 },
                                 x: 'center',
-                                y: 'center'
+                                y: '30%'
                             },
                             series: [{
                                 type: 'liquidFill',
                                 radius: '80%',
                                 center: ['50%', '50%'],
                                 //  shape: 'roundRect',
-                                data: [0.5, 0.5, 0.5],
+                                data: [0.75, 0.75, 0.75],
                                 backgroundStyle: {
                                     color: {
                                         type: 'linear',
-                                        x: 1,
+                                        x: 0,
                                         y: 0,
-                                        x2: 1,
+                                        x2: 0,
                                         y2: 1,
                                         colorStops: [{
                                             offset: 1,
+                                            color: 'rgb(0,255,190)'
+                                        }, {
+                                            offset: 0.5,
                                             color: 'rgb(0, 0, 0)'
                                         }, {
                                             offset: 0,
-                                            color: '#00ffbe'
+                                            color: 'rgb(0,255,190)'
                                         }],
                                         globalCoord: false
                                     },
@@ -296,38 +305,41 @@
                             title: {
                                 text: 200,
                                 textStyle: {
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontFamily: 'Microsoft Yahei',
                                     fontWeight: 'normal',
-                                    color: '#0b2b40',
+                                    color: 'rgb(11,43,64)',
                                     rich: {
                                         a: {
-                                            fontSize: 28,
+                                            fontSize: 14,
                                         }
                                     }
                                 },
                                 x: 'center',
-                                y: 'center'
+                                y: '30%'
                             },
                             series: [{
                                 type: 'liquidFill',
                                 radius: '80%',
                                 center: ['50%', '50%'],
                                 //  shape: 'roundRect',
-                                data: [0.5, 0.5, 0.5],
+                                data: [0.75, 0.75, 0.75],
                                 backgroundStyle: {
                                     color: {
                                         type: 'linear',
-                                        x: 1,
+                                        x: 0,
                                         y: 0,
-                                        x2: 1,
+                                        x2: 0,
                                         y2: 1,
                                         colorStops: [{
                                             offset: 1,
+                                            color: 'rgb(0,255,190)'
+                                        }, {
+                                            offset: 0.5,
                                             color: 'rgb(0, 0, 0)'
                                         }, {
                                             offset: 0,
-                                            color: '#00ffbe'
+                                            color: 'rgb(0,255,190)'
                                         }],
                                         globalCoord: false
                                     },
