@@ -138,33 +138,15 @@
                  const point = JSON.parse(window.localStorage.getItem('point'));
                  const positionArr = [];
                  const pointFeatureArr = [];
-                     for(let i of point) {
-                         positionArr.push(fromLonLat(i.position));
-                         const a = new Feature(new Point(fromLonLat(i.position)))
-                         a.sb = 'sb';
-                         // 设置文字
-                         a.setStyle(new Style({
-                             text: new Text({
-                                 font: '12px Microsoft YaHei',
-                                 text: i.name,
-                                // offsetY:-10,
-                                 fill: new Fill({
-                                     color: '#fff'
-                                 })
-                             }),
-                             image:new Icon ({
-                                 anchorXUnits: 'fraction',
-                                 anchorYUnits: 'fraction',
-                                 //crossOrigin: 'anonymous',
-                                 color: [255, 255, 0, 1],
-                                 scale:0.09,
-                                 name:'icon',
-                                 src: require('@/assets/icons/edit.svg')
-                             }),
-                         }) )
-                         // 设置点
-                         pointFeatureArr.push(a)
-                     }
+                 point.forEach((item,index)=>{
+                     positionArr.push(fromLonLat(item.position));
+                     const mapPoint = new Feature(new Point(fromLonLat(item.position)));
+                     //a.id = i.name; 原型上增加每个点的标识;
+                     // 设置文字
+                    this.setMapPointImg(mapPoint,index,item.name,point.length)
+                     // 设置点
+                     pointFeatureArr.push(mapPoint)
+                 })
                      // 离线地图
                      const raster = new TileLayer({
                          source: new XYZ({
@@ -186,8 +168,7 @@
                          })
                      });
                      // 设置黄线
-                 const lineFeature = new Feature(
-                     new LineString([...positionArr]));
+                    const lineFeature = new Feature(new LineString([...positionArr]));
                      // 初始化地图
                      const map = new Map({
                          layers: [raster,   new VectorLayer({
@@ -427,7 +408,7 @@
                          let orientation = Cesium.Transforms.headingPitchRollQuaternion(Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5), hpr);
                          const robot = viewer.entities.add({
                              name : 'robot',
-                            // position: property,
+                             position: property,
                              availability : new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
                                  start : start,
                                  stop : stop
@@ -452,6 +433,70 @@
                      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
                      viewer.scene.camera.lookAt(target,offset);
                  });
+             },
+             // 设置 2维地图点的文字以及图片
+             setMapPointImg(mapPoint,index,name,length) {
+                 if(index === 0) {
+                     mapPoint.setStyle(new Style({
+                         text: new Text({
+                             font: '12px Microsoft YaHei',
+                             text: name,
+                             // offsetY:-10,
+                             fill: new Fill({
+                                 color: '#fff'
+                             })
+                         }),
+                         image:new Icon ({
+                             anchorXUnits: 'fraction',
+                             anchorYUnits: 'fraction',
+                             //crossOrigin: 'anonymous',
+                             color: [255, 255, 0, 1],
+                             scale:0.8,
+                             name:'icon',
+                             src: require('@/assets/imgs/end.png')
+                         }),
+                     }) )
+                 }else if(index === length -1) {
+                     mapPoint.setStyle(new Style({
+                         text: new Text({
+                             font: '12px Microsoft YaHei',
+                             text: name,
+                             // offsetY:-10,
+                             fill: new Fill({
+                                 color: '#fff'
+                             })
+                         }),
+                         image:new Icon ({
+                             anchorXUnits: 'fraction',
+                             anchorYUnits: 'fraction',
+                             //crossOrigin: 'anonymous',
+                             color: [255, 255, 0, 1],
+                             scale:0.8,
+                             name:'icon',
+                             src: require('@/assets/imgs/start.png')
+                         }),
+                     }) )
+                 }else {
+                     mapPoint.setStyle(new Style({
+                         text: new Text({
+                             font: '12px Microsoft YaHei',
+                             text: name,
+                             // offsetY:-10,
+                             fill: new Fill({
+                                 color: '#fff'
+                             })
+                         }),
+                         image:new Icon ({
+                             anchorXUnits: 'fraction',
+                             anchorYUnits: 'fraction',
+                             //crossOrigin: 'anonymous',
+                             color: [255, 255, 0, 1],
+                             //scale:0.8,
+                             name:'icon',
+                             src: require('@/assets/imgs/center.png')
+                         }),
+                     }) )
+                 }
              }
          }
     }
