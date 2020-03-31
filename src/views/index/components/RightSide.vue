@@ -174,7 +174,7 @@
                         num:10
                     },
                     {
-                        name:'塔杆数量',
+                        name:'覆盖范围',
                         options:{
                             title: {
                                 text: 200,
@@ -237,138 +237,12 @@
                         num:40
                     },
                     {
-                        name:'覆盖范围(m²)',
-                        options:{
-                            title: {
-                                text: 200,
-                                textStyle: {
-                                    fontSize: 12,
-                                    fontFamily: 'Microsoft Yahei',
-                                    fontWeight: 'normal',
-                                    color: 'rgb(11,43,64)',
-                                    rich: {
-                                        a: {
-                                            fontSize: 14,
-                                        }
-                                    }
-                                },
-                                x: 'center',
-                                y: '30%'
-                            },
-                            series: [{
-                                type: 'liquidFill',
-                                radius: '80%',
-                                center: ['50%', '50%'],
-                                //  shape: 'roundRect',
-                                data: [0.75, 0.75, 0.75],
-                                backgroundStyle: {
-                                    color: {
-                                        type: 'linear',
-                                        x: 0,
-                                        y: 0,
-                                        x2: 0,
-                                        y2: 1,
-                                        colorStops: [{
-                                            offset: 1,
-                                            color: 'rgb(0,255,190)'
-                                        }, {
-                                            offset: 0.5,
-                                            color: 'rgb(0, 0, 0)'
-                                        }, {
-                                            offset: 0,
-                                            color: 'rgb(0,255,190)'
-                                        }],
-                                        globalCoord: false
-                                    },
-                                },
-                                outline: {
-                                    borderDistance: 0,
-                                    itemStyle: {
-                                        borderWidth: 1,
-                                        borderColor: '#00ffbe',
-
-                                    }
-                                },
-                                color: '#00ffbe',
-                                label: {
-                                    normal: {
-                                        formatter: '',
-                                    }
-                                }
-                            }]
-                        },
-                        num:10000
+                        name:'对应机器',
+                        num:'编号一'
                     },
                     {
-                        name:'机器人数量',
-                        options:{
-                            title: {
-                                text: 200,
-                                textStyle: {
-                                    fontSize: 12,
-                                    fontFamily: 'Microsoft Yahei',
-                                    fontWeight: 'normal',
-                                    color: 'rgb(11,43,64)',
-                                    rich: {
-                                        a: {
-                                            fontSize: 14,
-                                        }
-                                    }
-                                },
-                                x: 'center',
-                                y: '30%'
-                            },
-                            series: [{
-                                type: 'liquidFill',
-                                radius: '80%',
-                                center: ['50%', '50%'],
-                                //  shape: 'roundRect',
-                                data: [0.75, 0.75, 0.75],
-                                backgroundStyle: {
-                                    color: {
-                                        type: 'linear',
-                                        x: 0,
-                                        y: 0,
-                                        x2: 0,
-                                        y2: 1,
-                                        colorStops: [{
-                                            offset: 1,
-                                            color: 'rgb(0,255,190)'
-                                        }, {
-                                            offset: 0.5,
-                                            color: 'rgb(0, 0, 0)'
-                                        }, {
-                                            offset: 0,
-                                            color: 'rgb(0,255,190)'
-                                        }],
-                                        globalCoord: false
-                                    },
-                                },
-                                outline: {
-                                    borderDistance: 0,
-                                    itemStyle: {
-                                        borderWidth: 1,
-                                        borderColor: '#00ffbe',
-
-                                    }
-                                },
-                                color: '#00ffbe',
-                                label: {
-                                    normal: {
-                                        formatter: '',
-                                    }
-                                }
-                            }]
-                        },
-                        num:10
-                    },
-                    {
-                        name:'机器人类型',
-                        num:'架空类型'
-                    },
-                    {
-                        name:'线路数量',
-                        num:'架空类型'
+                        name:'线路类型',
+                        num:'类型一'
                     },
                 ],
                 taskList:[
@@ -504,6 +378,7 @@
     .rightSide {
         width: 13.6vw;
         .basicInfoWrapper {
+            height: 86.3vh;
             color: #fff;
             background-color: rgba(0,0,0,0.7);
             .basicList {
@@ -526,20 +401,21 @@
                         flex-direction: column;
                         justify-content: space-between;
                         align-items: center;
-                        margin-right: 1.1vw;
+                        margin-right: 3.4vw;
                         margin-bottom: 1.2vh;
                         text-align: center;
+                        //width: 3.6vw;
                         .img {
-                            margin-top: 0.3vh;
+                            margin-top: 1.1vh;
                             position: relative;
                             z-index: 1;
                             /deep/.echarts {
-                                width: 2.45vw;
-                                height: 4.44vh;
+                                width: 3.6vw;
+                                height: 5.6vh;
                             }
                             img {
                                 position: absolute;
-                                left: -0.2vw;
+                                left: 0.2vw;
                                 bottom: -1vh;
                                 z-index: 0;
                             }
@@ -547,11 +423,17 @@
                                 color:#00ffbe;
                             }
                         }
-                        &:nth-child(3) {
+                        &:nth-child(2) {
                             margin-right: 0;
                         }
-                        &:nth-child(6) {
+                        &:nth-child(3) {
+                            width: 3.6vw;
+                            margin-top: 2.7vh;
+                        }
+                        &:nth-child(4) {
+                            width: 3.6vw;
                             margin-right: 0;
+                            margin-top: 2.7vh;
                         }
                     }
                 }
@@ -583,7 +465,7 @@
                     height: 11.5vh;
                 }
                 .logWrapper {
-                    padding:1.9vh 0.9vw 1.7vh 1.1vw;
+                    padding: 1.9vh 0.9vw 0vh 1.1vw;
                     .logContent {
                         display: flex;
                         margin-bottom: 0.7vw;

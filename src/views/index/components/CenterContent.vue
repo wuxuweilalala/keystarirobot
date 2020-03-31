@@ -54,15 +54,13 @@
     import 'ol/ol.css';
     import Map from 'ol/Map';
     import Feature from 'ol/Feature';
-    import {LineString, Point, Polygon} from 'ol/geom';
-    import {defaults as defaultInteractions, Pointer as PointerInteraction} from 'ol/interaction';
+    import {LineString, Point} from 'ol/geom';
     import {fromLonLat} from 'ol/proj';
     import View from 'ol/View';
     import TileLayer from 'ol/layer/Tile';
-    import GPX from 'ol/format/GPX';
     import { Vector as VectorLayer} from 'ol/layer';
-    import {OSM, TileDebug,TileJSON, Vector as VectorSource} from 'ol/source';
-    import {Fill, Text, Icon, Stroke, Style,Circle as CircleStyle} from 'ol/style';
+    import { Vector as VectorSource} from 'ol/source';
+    import {Fill, Text, Icon, Stroke, Style} from 'ol/style';
     import XYZ from 'ol/source/XYZ';
     export default {
         name: "CenterContent",
@@ -118,10 +116,10 @@
                 renderer: null,
                 mesh: null,
                 viewer:undefined,
-                twoShow:true,
+                twoShow:false,
                 miniTwoShow:false,
                 videoShow:false,
-                threeShow:false,
+                threeShow:true,
                 miniVideoShow:false,
                 currentTower:[]
             }
@@ -143,10 +141,10 @@
                      const mapPoint = new Feature(new Point(fromLonLat(item.position)));
                      //a.id = i.name; 原型上增加每个点的标识;
                      // 设置文字
-                    this.setMapPointImg(mapPoint,index,item.name,point.length)
+                    this.setMapPointImg(mapPoint,index,item.name,point.length);
                      // 设置点
                      pointFeatureArr.push(mapPoint)
-                 })
+                 });
                      // 离线地图
                      const raster = new TileLayer({
                          source: new XYZ({
@@ -331,108 +329,103 @@
                      })*/
                  });
                  viewer._cesiumWidget._creditContainer.style.display = "none";
+                 const robotUrl = 'http://192.168.1.242:3000/model/robot-processed.glb';
                  const tower = 'http://192.168.1.242:3000/model/tower-processed.glb';
-                 const target = Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 7.5);
-                 const offset = new Cesium.Cartesian3(-37.048378684557974, -24.852967044804245,10.352023653686047);
-
+                 const target = Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 50.5);
+                 const offset = new Cesium.Cartesian3(-37.048378684557974, -24.852967044804245,12.352023653686047);
+                 viewer.scene.camera.lookAt(target,offset);
+                 const pointArray = JSON.parse(window.localStorage.getItem('point'));
+                 const pointArray1 = [];
+                 const property = new Cesium.SampledPositionProperty();
+                 const start = Cesium.JulianDate.fromDate(new Date(2020, 3, 26, 18));
+                 const stop = Cesium.JulianDate.addSeconds(start, 1000, new Cesium.JulianDate());
+                 viewer.clock.startTime = start.clone();
+                 viewer.clock.stopTime = stop.clone();
+                 viewer.clock.currentTime = start.clone();
+                 viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; //Loop at the end
+                 viewer.clock.multiplier = 1;
+                 viewer.clock.shouldAnimate = true;
+                 const topLineArray = [];
+                 const bottomLineArray = [];
+                 let num = 0;
+                 for(let i of pointArray) {
+                     const position = Cesium.Cartesian3.fromDegrees(i.position[0], i.position[1], 50);
+                     const position1 = Cesium.Cartesian3.fromDegrees(i.position[0], i.position[1], );
+                     // 将经纬度坐标转为 3d 地图的坐标
+                     pointArray1.push({name:i.name,position: Cesium.Cartesian3.fromDegrees( i.position[0],i.position[1] )  })
+                     // 增加机器人运动轨迹以及机器人高度
+                     property.addSample(Cesium.JulianDate.addSeconds(start, num+=10, new Cesium.JulianDate()),
+                         Cesium.Cartesian3.fromDegrees(i.position[0], i.position[1], 48));
+                     topLineArray.push(position);
+                     bottomLineArray.push(position1);
+                 }
+                 createRobot()
+                 // 添加电塔模型
+                 for(let i of pointArray1) {
+                     viewer.entities.add({
+                         name : i.name,
+                         position : i.position,
+                         model : {
+                             uri : tower
+                         }
+                     });
+                 }
+                 // 灯塔顶点连线
+                 viewer.entities.add({
+                     polyline : {
+                         show:true,
+                         positions : topLineArray,
+                         width : 1,
+                         material : Cesium.Color.WHITE
+                     }
+                 });
+                 // 灯塔底部连线
+                 viewer.entities.add({
+                     polyline : {
+                         show:true,
+                         positions : bottomLineArray,
+                         width : 5,
+                         material : Cesium.Color.YELLOW
+                     }
+                 });
+                 // 创建机器人
+                 function createRobot(){
+                     // 调整机器人方向
+                     //let heading = Cesium.Math.toRadians(160);
+                     //let pitch = 0;
+                     //let roll = 0;
+                     //let hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+                     //let orientation = Cesium.Transforms.headingPitchRollQuaternion(Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5), hpr);
+                     const robot = viewer.entities.add({
+                         name : 'robot',
+                         position: property,
+                         availability : new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
+                             start : start,
+                             stop : stop
+                         })]),
+                         //position : Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5),
+                         orientation: new Cesium.VelocityOrientationProperty(property),
+                         model : {
+                             uri : robotUrl,
+                             scale:0.005,
+                         }
+                     });
+                     viewer.trackedEntity = robot;
+                 }
+                 // 模型点击事件
+                 const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+                 handler.setInputAction(e=> {
+                     const pick = viewer.scene.pick(e.position)
+                     if(typeof pick.id.name  === 'number') {
+                         this.miniVideoShow = true;
+                         console.log(pick);
+                     }
+                 }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
                  const options = {
                      camera : viewer.scene.camera,
                      canvas : viewer.scene.canvas,
                      clampToGround: false //开启贴地
                  };
-                 // 引入 kmz 地图
-                 const kmzMap = viewer.dataSources.add(Cesium.KmlDataSource.load( 'http://192.168.1.242:3000/model/luowei.kmz', options));
-                 /*kmzMap.then( viewer.flyTo(kmzMap));*/
-                 kmzMap.then(dataSource=> {
-                     const entities = dataSource.entities.values;
-                     const pointArray = [];
-                     const pointArray1 = [];
-                     const property = new Cesium.SampledPositionProperty();
-                     const start = Cesium.JulianDate.fromDate(new Date(2020, 3, 26, 18));
-                     const stop = Cesium.JulianDate.addSeconds(start, 1000, new Cesium.JulianDate());
-                     viewer.clock.startTime = start.clone();
-                     viewer.clock.stopTime = stop.clone();
-                     viewer.clock.currentTime = start.clone();
-                     viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; //Loop at the end
-                     viewer.clock.multiplier = 1;
-                     viewer.clock.shouldAnimate = true;
-                     for (let i = 0; i < entities.length; i++) {
-                         const entity = entities[i];
-                         if(entity.position) {
-                             const ellipsoid=viewer.scene.globe.ellipsoid;
-                             const cartographic=ellipsoid.cartesianToCartographic(entity.position._value);
-                             const a = [Cesium.Math.toDegrees(cartographic.longitude),Cesium.Math.toDegrees(cartographic.latitude)];
-                             pointArray.push({name:entity._name,position:entity.position._value});
-                             pointArray1.push({name:entity._name,position:a});
-                         }
-                     }
-                     window.localStorage.setItem('point',JSON.stringify(pointArray1))
-                     // 创建电塔模型
-                     let towerId = 0;
-                     for(let i of pointArray) {
-                         viewer.entities.add({
-                             name : towerId+=1,
-                             position : i.position,
-                             model : {
-                                 uri : tower
-                             }
-                         });
-                     }
-                     const lineArr = []
-                     let num = 0;
-                     for(let i of pointArray1) {
-                         const position = Cesium.Cartesian3.fromDegrees(i.position[0], i.position[1], 50);
-                         lineArr.push(position)
-                         // 增加机器人运动轨迹以及机器人高度
-                         property.addSample(Cesium.JulianDate.addSeconds(start, num+=10, new Cesium.JulianDate()),
-                             Cesium.Cartesian3.fromDegrees(i.position[0], i.position[1], 48));
-                     }
-                     // 灯塔顶点连线
-                     viewer.entities.add({
-                         polyline : {
-                             show:true,
-                             positions : lineArr,
-                             width : 1,
-                             material : Cesium.Color.WHITE
-                         }
-                     });
-                     // 创建机器人
-                     createRobot()
-                     function createRobot(){
-                         // 调整机器人方向
-                         let heading = Cesium.Math.toRadians(160);
-                         let pitch = 0;
-                         let roll = 0;
-                         let hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
-                         const robotUrl = 'http://192.168.1.242:3000/model/robot-processed.glb'
-                         let orientation = Cesium.Transforms.headingPitchRollQuaternion(Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5), hpr);
-                         const robot = viewer.entities.add({
-                             name : 'robot',
-                             position: property,
-                             availability : new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
-                                 start : start,
-                                 stop : stop
-                             })]),
-                             //position : Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5),
-                             orientation: new Cesium.VelocityOrientationProperty(property),
-                             model : {
-                                 uri : robotUrl,
-                                 scale:0.005,
-                             }
-                         });
-                         viewer.trackedEntity = robot;
-                     }
-                     // 模型点击事件
-                     const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-                     handler.setInputAction(e=> {
-                         const pick = viewer.scene.pick(e.position)
-                         if(typeof pick.id.name  === 'number') {
-                             this.miniVideoShow = true;
-                             console.log(pick);
-                         }
-                     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-                     viewer.scene.camera.lookAt(target,offset);
-                 });
              },
              // 设置 2维地图点的文字以及图片
              setMapPointImg(mapPoint,index,name,length) {
@@ -450,7 +443,6 @@
                              anchorXUnits: 'fraction',
                              anchorYUnits: 'fraction',
                              //crossOrigin: 'anonymous',
-                             color: [255, 255, 0, 1],
                              scale:0.8,
                              name:'icon',
                              src: require('@/assets/imgs/end.png')
@@ -470,7 +462,6 @@
                              anchorXUnits: 'fraction',
                              anchorYUnits: 'fraction',
                              //crossOrigin: 'anonymous',
-                             color: [255, 255, 0, 1],
                              scale:0.8,
                              name:'icon',
                              src: require('@/assets/imgs/start.png')
@@ -490,7 +481,6 @@
                              anchorXUnits: 'fraction',
                              anchorYUnits: 'fraction',
                              //crossOrigin: 'anonymous',
-                             color: [255, 255, 0, 1],
                              //scale:0.8,
                              name:'icon',
                              src: require('@/assets/imgs/center.png')
