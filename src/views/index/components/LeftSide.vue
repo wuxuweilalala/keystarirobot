@@ -178,6 +178,7 @@
         methods:{
             chooseLine(index) {
                 this.currentLineIndex = index;
+                console.log(index);
             },
             chooseWarn(index){
                 this.currentWarnIndex = index;

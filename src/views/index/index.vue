@@ -19,11 +19,7 @@
             LeftSide,
             CenterContent,
             RightSide
-        },
-        data(){
-            return {
-            }
-        },
+        }
     }
 </script>
 
