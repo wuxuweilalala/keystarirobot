@@ -5,9 +5,7 @@
                 <img src="@/assets/imgs/headerBg.png" alt="">
             </div>
             <div class="weatherList" v-for="(list,index) in weatherList" :key="index">
-                <svg class="icon" aria-hidden="true">
-                    <use :xlink:href="`#icon${list.icon}`"/>
-                </svg>
+                <Icon :name="list.icon" />
                 <span class="num">{{list.value}}</span>
                 <div class="line" v-if="index !== 3">
                     <div></div>
@@ -21,18 +19,22 @@
 </template>
 
 <script>
+    import Icon from '@/components/Icon.vue'
     import  timeFormatter   from '@/utils/methods.js'
     export default {
         name: "Header",
+        components:{
+            Icon
+        },
         data(){
             return{
                 weatherList:[
                     {
-                        icon:'-weather',
+                        icon:'weather',
                         value:'24°'
                     },
                     {
-                        icon:'-airHumidity',
+                        icon:'airHumidity',
                         value:'80%'
                     },
                     {
@@ -40,7 +42,7 @@
                         value:'2.5'
                     },
                     {
-                        icon:'-air',
+                        icon:'air',
                         value:'40'
                     },
                 ],

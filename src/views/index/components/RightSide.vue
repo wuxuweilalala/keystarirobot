@@ -32,12 +32,8 @@
                         <div class="taskList" v-for="(list,index) in taskList" :key="index">
                             <span>{{list.name}}</span>
                             <span>{{list.desc}}</span>
-                            <svg class="icon" aria-hidden="true" v-if="list.isCompleted">
-                                <use xlink:href="#iconchenggong2"/>
-                            </svg>
-                            <svg class="icon" aria-hidden="true" v-else>
-                                <use xlink:href="#iconweiwancheng"/>
-                            </svg>
+                            <Icon name="success" v-if="list.isCompleted" />
+                            <Icon name="fail" v-else/>
                         </div>
                     </div>
                 </div>
@@ -74,6 +70,7 @@
 </template>
 
 <script >
+    import Icon from '@/components/Icon.vue'
     const echarts = require('echarts/lib/echarts');
     require('echarts/lib/chart/line');
     require('echarts/lib/component/tooltip');
@@ -85,7 +82,8 @@
         name: "RightSide",
         components:{
             SonHeader,
-            vECharts
+            vECharts,
+            Icon
         },
         data(){
             return {

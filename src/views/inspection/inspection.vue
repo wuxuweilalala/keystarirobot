@@ -10,13 +10,9 @@
                 <div class="right">
                     <div class="inputWrapper">
                         <input type="text" placeholder="按任务、线路名称搜索">
-                        <svg class="icon refresh" aria-hidden="true">
-                            <use xlink:href="#iconsousuo"/>
-                        </svg>
+                        <Icon name="search" class="refresh" />
                     </div>
-                    <svg class="icon refresh" aria-hidden="true">
-                        <use xlink:href="#iconshuaxin"/>
-                    </svg>
+                    <Icon name="refresh" class="refresh" />
                     <div class="add">+</div>
                 </div>
             </header>
@@ -31,9 +27,7 @@
                             align="center"
                     >
                         <template slot-scope="scope">
-                            <svg class="icon" aria-hidden="true">
-                                <use xlink:href="#iconxiala"/>
-                            </svg>
+                            <Icon name="bottomArrow" />
                             <span>{{scope.row.taskName}}</span>
                         </template>
                     </el-table-column>
@@ -91,18 +85,10 @@
                             align="right"
                     >
                         <template >
-                            <div class="icon">
-                                <img src="@/assets/icons/edit.svg" alt="">
-                            </div>
-                            <svg class="icon" aria-hidden="true">
-                                <use xlink:href="#iconshangchuan"/>
-                            </svg>
-                            <svg class="icon" aria-hidden="true">
-                                <use xlink:href="#iconxiazai"/>
-                            </svg>
-                            <svg class="icon" aria-hidden="true">
-                                <use xlink:href="#icondelete"/>
-                            </svg>
+                            <Icon name="edit" />
+                            <Icon name="upLoad" />
+                            <Icon name="downLoad" />
+                            <Icon name="delete" />
                         </template>
                     </el-table-column>
                 </el-table>
@@ -118,11 +104,12 @@
     </div>
 </template>
 <script>
+    import Icon from '@/components/Icon.vue'
     import RouteHeader from "@/components/RouteHeader.vue";
     export default {
         name: "inspection",
         components:{
-            RouteHeader
+            RouteHeader,Icon
         },
         data(){
             return {

@@ -6,26 +6,19 @@
                 <span>路段名称</span>
                 <span>塔杆数</span>
                 <span>操作</span>
+                <img src="" alt="">
             </div>
             <div class="listContentWrapper">
                 <div :class="[{activeList:currentLineIndex === index},'list']" v-for="(list,index) in lineList" @click="chooseLine(index)" :key="index">
                     <div class="listLeft">
-                        <svg class="icon" aria-hidden="true" v-if="currentLineIndex === index">
-                            <use xlink:href="#icontubiaohuang"/>
-                        </svg>
-                        <svg class="icon" aria-hidden="true" v-else>
-                            <use xlink:href="#icontubiaolv"/>
-                        </svg>
+                        <Icon name="yellowLine" v-if="currentLineIndex === index"/>
+                        <Icon name="greenLine" v-else/>
                         <span>{{list.name}}</span>
                     </div>
                     <div class="listCenter">{{list.num}}</div>
                     <div class="listRight">
-                        <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#iconbianji"/>
-                        </svg>
-                        <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#iconjiahao"/>
-                        </svg>
+                        <Icon name="greenEdit"/>
+                        <Icon name="add"/>
                     </div>
                 </div>
             </div>
@@ -41,12 +34,8 @@
                 <vueSeamless :data="warningList" :class-option="seamlessOptions" >
                     <div :class="[{activeList:currentWarnIndex === index},'list']" v-for="(list,index) in warningList" @click="chooseWarn(index)" :key="index">
                         <div class="listLeft">
-                            <svg class="icon" aria-hidden="true" v-if="list.isCompleted">
-                                <use xlink:href="#iconchenggong2"/>
-                            </svg>
-                            <svg class="icon" aria-hidden="true" v-else>
-                                <use xlink:href="#iconweiwancheng"/>
-                            </svg>
+                            <Icon name="success" v-if="list.isCompleted"/>
+                            <Icon name="fail" v-else/>
                             <span>{{list.type}}</span>
                         </div>
                         <div class="listCenter">{{list.desc}}</div>
@@ -62,7 +51,8 @@
 
 <script>
     import SonHeader from "@/components/SonHeader.vue";
-    import vueSeamless from 'vue-seamless-scroll'
+    import vueSeamless from 'vue-seamless-scroll';
+    import Icon from '@/components/Icon.vue'
     export default {
         name: "LeftSide",
         data(){
@@ -173,7 +163,8 @@
         },
         components:{
             SonHeader,
-            vueSeamless
+            vueSeamless,
+            Icon
         },
         methods:{
             chooseLine(index) {
@@ -185,11 +176,11 @@
         }
     }
 </script>
-<style>
-    #iconbianji path {
+<!--<style>
+    #greenEdit path {
         fill:#00ffbf;
     }
-</style>
+</style>-->
 <style lang="scss" scoped>
     .leftSide {
         width: 13.6vw;

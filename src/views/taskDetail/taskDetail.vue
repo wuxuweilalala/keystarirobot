@@ -24,35 +24,12 @@
                 </div>
                 <div class="tabPane" v-for="(item,index) in defectsList" :key="index" v-if="activeName === item.title">
                     <div :class="[{activeDefects:sonIndex === 1},'defects']" v-for="(list,sonIndex) in item.data" :key="sonIndex">
-                        <svg class="icon" aria-hidden="true" v-if="sonIndex === 0">
-                            <use xlink:href="#icontubiaolv"/>
-                        </svg>
-                        <div class="yellowPicture" v-else-if="sonIndex === 1">
-                            <img src="@/assets/icons/yellowPicture.svg" alt="" >
-                        </div>
-                        <svg class="icon" aria-hidden="true" v-else>
-                            <use xlink:href="#icontupian"/>
-                        </svg>
+                        <Icon name="greenLine" v-if="sonIndex === 0"/>
+                        <Icon name="yellowPicture" v-else-if="sonIndex === 1"/>
+                        <Icon name="pictureInfo" v-else/>
                         {{list.name}}
                     </div>
                 </div>
-               <!-- <div class="tabPane" v-if="activeName === '缺陷图'">
-                    <div :class="[{activeDefects:index === 1},'defects']" v-for="(list,index) in defectsList" :key="index">
-                        <svg class="icon" aria-hidden="true" v-if="index === 0">
-                            <use xlink:href="#icontubiaolv"/>
-                        </svg>
-                        <div class="yellowPicture" v-else-if="index === 1">
-                            <img src="@/assets/icons/yellowPicture.svg" alt="" >
-                        </div>
-                        <svg class="icon" aria-hidden="true" v-else>
-                            <use xlink:href="#icontupian"/>
-                        </svg>
-                        {{list.name}}
-                    </div>
-                </div>
-                <div class="tabPane" v-if="activeName === '正常'">正常</div>
-                <div class="tabPane" v-if="activeName === '误报'">误报</div>
-                <div class="tabPane" v-if="activeName === '未检测'">未检测</div>-->
             </section>
             <section class="centerSection">
                 <div class="centerHeader">
@@ -170,11 +147,13 @@
 </template>
 
 <script >
+    import Icon from '@/components/Icon.vue'
     import SonHeader from "@/components/SonHeader";
     export default {
         name: "taskDetail",
         components:{
-            SonHeader
+            SonHeader,
+            Icon
         },
         data(){
             return {

@@ -1,37 +1,27 @@
 <template>
     <div class="sonHeader">
         <div>
-            <svg class="icon leftIcon1" aria-hidden="true" v-if="name === '线路信息'">
-                <use xlink:href="#iconroad-info"/>
-            </svg>
-            <svg class="icon leftIcon2" aria-hidden="true" v-if="name === '实时预警'">
-                <use xlink:href="#iconyujing"/>
-            </svg>
-            <svg class="icon leftIcon3" aria-hidden="true" v-if="name === '基础信息'">
-                <use xlink:href="#iconjichushuju"/>
-            </svg>
-            <svg class="icon leftIcon4" aria-hidden="true" v-if="name === '图片信息'">
-                <use xlink:href="#icontupian"/>
-            </svg>
-            <svg class="icon leftIcon5" aria-hidden="true" v-if="name === '缺陷信息'">
-                <use xlink:href="#iconquexian"/>
-            </svg>
+            <Icon name="lineInfo" class="leftIcon1"  v-if="name === '线路信息'"/>
+            <Icon name="warn" class="leftIcon2"  v-if="name === '实时预警'"/>
+            <Icon name="baseInfo" class="leftIcon3"  v-if="name === '基础信息'"/>
+            <Icon name="pictureInfo" class="leftIcon4"  v-if="name === '图片信息'"/>
+            <Icon name="defect" class="leftIcon5"  v-if="name === '缺陷信息'"/>
             <span class="name">{{name}}</span>
         </div>
-        <svg class="icon rightIcon" aria-hidden="true" v-if="rightIcon === 'right'">
-            <use xlink:href="#iconyincangjianyou"/>
-        </svg>
-        <svg class="icon rightIcon" aria-hidden="true" v-if="rightIcon === 'left'">
-            <use xlink:href="#iconyincangjianzuo"/>
-        </svg>
+        <Icon name="rightArrow" class="rightIcon"  v-if="rightIcon === 'right'"/>
+        <Icon name="leftArrow" class="rightIcon"  v-if="rightIcon === 'left'"/>
         <span v-if="conditions" class="condition">条件过滤</span>
     </div>
 </template>
 
 <script>
+    import Icon from "@/components/Icon.vue"
     export default {
         name: "SonHeader",
-        props:['name','rightIcon','conditions']
+        props:['name','rightIcon','conditions'],
+        components:{
+            Icon
+        }
     }
 </script>
 
