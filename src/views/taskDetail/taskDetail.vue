@@ -22,7 +22,21 @@
                     <div class="activeLine"></div>
                     <span :class="[{activeTab:list === activeName},'tabList']" v-for="(list,index) in tabTitleList" :key="index" @click="handleClick(list,index)">{{list}}</span>
                 </div>
-                <div class="tabPane" v-if="activeName === '缺陷图'">
+                <div class="tabPane" v-for="(item,index) in defectsList" :key="index" v-if="activeName === item.title">
+                    <div :class="[{activeDefects:sonIndex === 1},'defects']" v-for="(list,sonIndex) in item.data" :key="sonIndex">
+                        <svg class="icon" aria-hidden="true" v-if="sonIndex === 0">
+                            <use xlink:href="#icontubiaolv"/>
+                        </svg>
+                        <div class="yellowPicture" v-else-if="sonIndex === 1">
+                            <img src="@/assets/icons/yellowPicture.svg" alt="" >
+                        </div>
+                        <svg class="icon" aria-hidden="true" v-else>
+                            <use xlink:href="#icontupian"/>
+                        </svg>
+                        {{list.name}}
+                    </div>
+                </div>
+               <!-- <div class="tabPane" v-if="activeName === '缺陷图'">
                     <div :class="[{activeDefects:index === 1},'defects']" v-for="(list,index) in defectsList" :key="index">
                         <svg class="icon" aria-hidden="true" v-if="index === 0">
                             <use xlink:href="#icontubiaolv"/>
@@ -38,7 +52,7 @@
                 </div>
                 <div class="tabPane" v-if="activeName === '正常'">正常</div>
                 <div class="tabPane" v-if="activeName === '误报'">误报</div>
-                <div class="tabPane" v-if="activeName === '未检测'">未检测</div>
+                <div class="tabPane" v-if="activeName === '未检测'">未检测</div>-->
             </section>
             <section class="centerSection">
                 <div class="centerHeader">
@@ -180,58 +194,179 @@
                 ],
                 defectsList:[
                     {
-                        name:'第九支塔杆'
+                        title:'缺陷图',
+                        data:[
+                            {
+                            name:'第九支塔杆'
+                            },
+                            {
+                                name:'一B 横担.jpg'
+                            },
+                            {
+                                name:'一B 连接点(2).jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            }]
                     },
                     {
-                        name:'一B 横担.jpg'
+                        title:'正常',
+                        data:[
+                            {
+                                name:'第九支塔杆'
+                            },
+                            {
+                                name:'一B 横担.jpg'
+                            },
+                            {
+                                name:'一B 连接点(2).jpg'
+                            },
+                            {
+                                name:'一C 连接点(4).jpg'
+                            },
+                            {
+                                name:'一C 连接点.jpg'
+                            },
+                            {
+                                name:'二A 连接点.jpg'
+                            },
+                            {
+                                name:'一C 金具.jpg'
+                            },
+                            {
+                                name:'全塔.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            }]
                     },
                     {
-                        name:'一B 连接点(2).jpg'
+                        title:'误报',
+                        data:[
+                            {
+                                name:'第九支塔杆'
+                            },
+                            {
+                                name:'一B 横担.jpg'
+                            },
+                            {
+                                name:'一B 连接点(2).jpg'
+                            },
+                            {
+                                name:'一C 连接点(4).jpg'
+                            },
+                            {
+                                name:'一C 连接点.jpg'
+                            },
+                            {
+                                name:'二A 连接点.jpg'
+                            },
+                            {
+                                name:'一C 金具.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            }]
                     },
                     {
-                        name:'一C 连接点(4).jpg'
-                    },
-                    {
-                        name:'一C 连接点.jpg'
-                    },
-                    {
-                        name:'二A 连接点.jpg'
-                    },
-                    {
-                        name:'一C 金具.jpg'
-                    },
-                    {
-                        name:'全塔.jpg'
-                    },
-                    {
-                        name:'城奥一15#一C 绝缘子.jpg'
-                    },
-                    {
-                        name:'城奥一15#一C 绝缘子.jpg'
-                    },
-                    {
-                        name:'城奥一15#一C 绝缘子.jpg'
-                    },
-                    {
-                        name:'城奥一15#一C 绝缘子.jpg'
-                    },
-                    {
-                        name:'城奥一15#一C 绝缘子.jpg'
-                    },
-                    {
-                        name:'城奥一15#一C 绝缘子.jpg'
-                    },
-                    {
-                        name:'城奥一15#一C 绝缘子.jpg'
-                    },
-                    {
-                        name:'城奥一15#一C 绝缘子.jpg'
-                    },
-                    {
-                        name:'城奥一15#一C 绝缘子.jpg'
-                    },
-                    {
-                        name:'城奥一15#一C 绝缘子.jpg'
+                        title:'未检测',
+                        data:[
+                            {
+                                name:'第九支塔杆'
+                            },
+                            {
+                                name:'一B 横担.jpg'
+                            },
+                            {
+                                name:'一B 横担.jpg'
+                            },
+                            {
+                                name:'一B 横担.jpg'
+                            },
+                            {
+                                name:'一B 连接点(2).jpg'
+                            },
+                            {
+                                name:'一C 连接点(4).jpg'
+                            },
+                            {
+                                name:'一C 连接点.jpg'
+                            },
+                            {
+                                name:'二A 连接点.jpg'
+                            },
+                            {
+                                name:'一C 金具.jpg'
+                            },
+                            {
+                                name:'全塔.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            },
+                            {
+                                name:'城奥一15#一C 绝缘子.jpg'
+                            }]
                     },
                 ],
                 options: [
@@ -420,7 +555,10 @@
             }
             .tabPane {
                 background-color: rgba(0,0,0,.7);
+                height: 76.5vh;
                 font-size: 0.6vw;
+                overflow: scroll;
+                &::-webkit-scrollbar {display:none}
                 .defects {
                     display: flex;
                     align-items: center;

@@ -57,6 +57,9 @@
                             :width="width1"
                             align="center"
                     >
+                        <template slot-scope="scope">
+                            <span  @click="toDetail(scope)">{{scope.row.total}}</span>
+                        </template>
                     </el-table-column>
                     <el-table-column
                             prop="status"
@@ -87,8 +90,8 @@
                             :width="width4"
                             align="right"
                     >
-                        <template slot-scope="scope">
-                            <div class="icon" @click="toDetail(scope)">
+                        <template >
+                            <div class="icon">
                                 <img src="@/assets/icons/edit.svg" alt="">
                             </div>
                             <svg class="icon" aria-hidden="true">
@@ -114,7 +117,6 @@
         </div>
     </div>
 </template>
-
 <script>
     import RouteHeader from "@/components/RouteHeader.vue";
     export default {
@@ -316,7 +318,7 @@
                         progress:100,
                     }
                 ],
-                width1:230/1920*window.document.body.clientWidth,
+                width1:230/1920*window.document.body.clientWidth, // 适配各种屏幕宽度
                 width2:280/1920*window.document.body.clientWidth,
                 width3:300/1920*window.document.body.clientWidth,
                 width4:304/1920*window.document.body.clientWidth,
@@ -434,6 +436,7 @@
             }
             &:nth-child(4) {
                 color:#00ffbf;
+                cursor: pointer;
             }
             &:nth-child(7) {
                 .cell {

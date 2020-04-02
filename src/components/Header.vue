@@ -16,11 +16,12 @@
             </div>
         </div>
         <span class="title">架空巡检机器人可视化管理系统</span>
-        <span class="rightSide">2019/1/8 11:38:02</span>
+        <span class="rightSide">{{date}} {{nowTime}}</span>
     </header>
 </template>
 
-<script lang="ts">
+<script>
+    import  timeFormatter   from '@/utils/methods.js'
     export default {
         name: "Header",
         data(){
@@ -42,8 +43,18 @@
                         icon:'-air',
                         value:'40'
                     },
-                ]
+                ],
+                timer: null,
+                date: "",
+                nowTime: ""
             }
+        },
+        mounted(){
+            this.timer = setInterval(() => {
+                let time = timeFormatter({prefix: true});
+                this.date = time.date;
+                this.nowTime = time.nowTime;
+            }, 1000);
         }
     }
 </script>
