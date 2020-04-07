@@ -414,6 +414,7 @@
                 document.querySelector('.activeLine').style.transform = `translateX(${distance}vw)`;
             },
             handleKeyup(e){
+                // 键盘事件
                 if(e.keyCode === 87) {
                     this.$refs.carousel.prev();
                 }else if(e.keyCode === 83) {

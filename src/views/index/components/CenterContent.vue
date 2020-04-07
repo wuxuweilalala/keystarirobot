@@ -242,7 +242,7 @@
                  viewer._cesiumWidget._creditContainer.style.display = "none";
                  const robotUrl = 'http://192.168.1.242:3000/model/robot-processed.glb';
                  const tower = 'http://192.168.1.242:3000/model/tower-processed.glb';
-                 const target = Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 50.5);
+                 const target = Cesium.Cartesian3.fromDegrees( this.testPointData[0].position[0],this.testPointData[0].position[1] , 50.5);
                  const offset = new Cesium.Cartesian3(-37.048378684557974, -24.852967044804245,12.352023653686047);
                  viewer.scene.camera.lookAt(target,offset);
                  const pointArray = this.testPointData;
