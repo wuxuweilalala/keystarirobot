@@ -2,15 +2,16 @@
     <div class="routeWrapper">
         <div :class="[{activeList:list.path === $route.path},'routeList']" v-for="(list,index) in routeList" @click="toRoute(list)" :key="index">
             {{list.name}}
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
+        </div>
+        <div class="robotControl">
+            <Icon name="machine" />
+            <span>机器控制</span>
         </div>
     </div>
 </template>
 
 <script>
+    import Icon from '@/components/Icon.vue'
     export default {
         name: "RouteHeader",
         data(){
@@ -34,6 +35,9 @@
                     }],
             }
         },
+        components:{
+            Icon
+        },
         methods:{
             toRoute(list){
                 this.$router.push(list.path)
@@ -48,6 +52,7 @@
         justify-content: center;
         margin-top: 0.8vh;
         font-size: 0.73vw;
+        position: relative;
         .routeList {
             position: relative;
             display: flex;
@@ -117,6 +122,22 @@
                     border-right: 2px solid  #00ffbf;
                     border-bottom: 2px solid #00ffbf;
                 }
+            }
+        }
+        .robotControl {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            right: 0;
+            min-width: 6vw;
+            min-height: 3vh;
+            background: url('~@/assets/imgs/grayBorder.png');
+            background-size: 100% 100%;
+            opacity: 0.5;
+            span {
+                color: #ffffff;
+                margin-left: 0.3vw;
             }
         }
     }

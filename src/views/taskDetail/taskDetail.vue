@@ -379,7 +379,7 @@
                 carouselList:[
                     {
                         id:0,
-                        imgView:require('@/assets/imgs/bodyBg.png')
+                        imgView:require('@/assets/imgs/bodyBg.webp')
                     },
                     {
                         id:1,

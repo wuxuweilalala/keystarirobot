@@ -25,7 +25,7 @@
   body {
     width: 100vw;
     height: 100vh;
-    background: url('~@/assets/imgs/bodyBg.png') no-repeat;
+    background: url('~@/assets/imgs/bodyBg.webp') no-repeat;
     background-size: 100% 100%;
     color:#fff;
   }

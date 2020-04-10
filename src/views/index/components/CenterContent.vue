@@ -119,15 +119,11 @@
                         }
                     }
                 },
-                camera: null,
-                scene: null,
-                renderer: null,
-                mesh: null,
-                viewer:undefined,
                 twoShow:true,
                 miniTwoShow:false,
                 videoShow:false,
                 threeShow:false,
+                testVideoUrl:'rtmp://202.69.69.180:443/webcast/bshdlive-pc',
                 miniVideoShow:false,
                 twoMap:null,
                 currentTower:[],
@@ -136,12 +132,15 @@
         },
         mounted() {
             this.twoShow ? this.mapInit() : this.webglInit();
+            this.axios.get('')
         },
          methods:{
+            //  2d 地图与视频切换
              twoMapShow(){
                  this.twoShow = true;
                  this.videoShow = false;
              },
+             // 2d 地图
              mapInit(){
                  const positionArr = [];
                  const pointFeatureArr = [];
@@ -223,6 +222,7 @@
                              });
                      });
              },
+             // 3d 地图
              webglInit(){
                  const viewer = new Cesium.Viewer('threeMap',{
                      animation:false,
@@ -263,16 +263,17 @@
                      const position = Cesium.Cartesian3.fromDegrees(i.position[0], i.position[1], 50);
                      const position1 = Cesium.Cartesian3.fromDegrees(i.position[0], i.position[1], );
                      // 将经纬度坐标转为 3d 地图的坐标
-                     pointArray1.push({name:i.name,position: Cesium.Cartesian3.fromDegrees( i.position[0],i.position[1] )  })
+                     pointArray1.push({name:i.name,position: Cesium.Cartesian3.fromDegrees( i.position[0],i.position[1])})
                      // 增加机器人运动轨迹以及机器人高度
                      property.addSample(Cesium.JulianDate.addSeconds(start, num+=10, new Cesium.JulianDate()),
                          Cesium.Cartesian3.fromDegrees(i.position[0], i.position[1], 48));
                      topLineArray.push(position);
                      bottomLineArray.push(position1);
                  }
-                 createRobot()
+                 createRobot();
                  // 添加电塔模型
                  for(let i of pointArray1) {
+                     console.log('tower');
                      viewer.entities.add({
                          name : i.name,
                          position : i.position,
@@ -301,12 +302,27 @@
                  });
                  // 创建机器人
                  function createRobot(){
+                     console.log('robot');
                      // 调整机器人运动方向
                      //let heading = Cesium.Math.toRadians(160);
                      //let pitch = 0;
                      //let roll = 0;
                      //let hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
                      //let orientation = Cesium.Transforms.headingPitchRollQuaternion(Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5), hpr);
+
+                     //  异步加载 glb 模型测试
+                     /*var robot = viewer.scene.primitives.add(Cesium.Model.fromGltf({
+                         /!*name : 'robot',
+                         position: property,
+                         availability : new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
+                             start : start,
+                             stop : stop
+                         })]),*!/
+                         //position : Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5),
+                         modelMatrix: Cesium.Transforms.eastNorthUpToFixedFrame(Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 50)),
+                         url : robotUrl,
+                         scale:0.005,
+                     }))*/
                      const robot = viewer.entities.add({
                          name : 'robot',
                          position: property,
@@ -314,7 +330,6 @@
                              start : start,
                              stop : stop
                          })]),
-                         //position : Cesium.Cartesian3.fromDegrees( 122.1143738349002,30.125011306697886 , 57.5),
                          orientation: new Cesium.VelocityOrientationProperty(property),
                          model : {
                              uri : robotUrl,
@@ -327,7 +342,7 @@
                  const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
                  handler.setInputAction(e=> {
                      const pick = viewer.scene.pick(e.position)
-                     if(typeof pick.id.name  === 'number') {
+                     if(typeof pick.id.name) {
                          this.miniVideoShow = true;
                          console.log(pick);
                      }

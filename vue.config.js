@@ -16,6 +16,5 @@ module.exports = {
           .use('svgo-loader').loader('svgo-loader')
       config.plugin('svg-sprite-loader').use(require('svg-sprite-loader/plugin'), [{ plainSprite: true }])
       config.module.rule('svg').exclude.add(dir) // 其他 svg loader 排除 icons 目录
-  },
-
+  }
 };
