@@ -36,7 +36,7 @@
                         <div class="equipmentImg">
                             <EasyPlayer
                                     ref="myPlayer"
-                                    videoUrl="rtmp://121.46.4.233:1936/stream/live2"
+                                    videoUrl="rtmp://202.69.69.180:443/webcast/bshdlive-pc"
                                     live
                                     auto-play
                                     aspect="16:10"

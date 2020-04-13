@@ -9,10 +9,11 @@
                     <span>{{list.name}}</span>
                     <div class="img">
                         <vECharts :options="list.options" v-if="list.options"/>
-                        <img src="@/assets/imgs/roundBg.png" v-if="typeof list.num !== 'string'">
-                        <span class="blueColor" v-if="typeof list.num === 'string'">{{list.num}}</span>
+                        <img src="@/assets/imgs/line.png" v-if="list.name === '线路类型'">
+                        <img src="@/assets/imgs/machine.png" v-if="list.name === '对应机器'" >
+                        <img class="round" src="@/assets/imgs/roundBg.png">
                     </div>
-
+                    <span class="blueColor" v-if="typeof list.num === 'string'">{{list.num}}</span>
                 </div>
             </div>
         </div>
@@ -385,58 +386,63 @@
                 padding-left: 1.1vw;
                 border-bottom: 2px solid rgba(0, 255, 234, .2);
             }
-
             .basicContent {
                 display: flex;
                 justify-content: center;
                 flex-wrap: wrap;
                 font-size: 0.6vw;
                 margin-top: 0.8vw;
-
                 .basicDataList {
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;
                     align-items: center;
                     margin-right: 3.4vw;
-                    margin-bottom: 1.2vh;
+                    //margin-bottom: 1.2vh;
                     text-align: center;
                     //width: 3.6vw;
                     .img {
                         margin-top: 1.1vh;
                         position: relative;
                         z-index: 1;
-
                         /deep/ .echarts {
                             width: 3.6vw;
                             height: 5.6vh;
                         }
-
-                        img {
+                        .round {
                             position: absolute;
                             left: 0.2vw;
                             bottom: -1vh;
                             z-index: 0;
                         }
-
-                        .blueColor {
-                            color: #00ffbe;
-                        }
                     }
-
+                    .blueColor {
+                        color: #00ffbe;
+                        margin-top: 1vh;
+                    }
                     &:nth-child(2) {
                         margin-right: 0;
                     }
 
                     &:nth-child(3) {
                         width: 3.6vw;
-                        margin-top: 2.7vh;
+                        margin-top: 1.7vh;
+                        .img {
+                            .round {
+                                left: -0.6vw;
+                            }
+                        }
                     }
 
                     &:nth-child(4) {
                         width: 3.6vw;
                         margin-right: 0;
-                        margin-top: 2.7vh;
+                        margin-top: 1.7vh;
+                        .img {
+                            .round {
+                                left: -0.6vw;
+                            }
+                        }
                     }
                 }
             }
@@ -462,7 +468,7 @@
                     padding: 0 1.9vw 0 1.4vw;
 
                     .taskList {
-                        margin-bottom: 1.3vh;
+                        margin-bottom: 1vh;
 
                         span {
                             margin-right: 2.5vw;
