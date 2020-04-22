@@ -4,7 +4,12 @@ import router from './router'
 import store from './store'
 import { Table ,TableColumn,Progress,Switch,Pagination,Select,Option,  Carousel, CarouselItem,Checkbox } from 'element-ui'
 import  'element-ui/lib/theme-chalk/index.css'
-import Axios from 'axios';
+import { get, post, del, put } from "./utils/http.js";
+
+Vue.prototype.$get = get;
+Vue.prototype.$post = post;
+Vue.prototype.$put = put;
+Vue.prototype.$del = del;
 Vue.use(Table);
 Vue.use(TableColumn);
 Vue.use(Progress);
@@ -16,7 +21,6 @@ Vue.use(Carousel);
 Vue.use(CarouselItem);
 Vue.use(Checkbox);
 Vue.config.productionTip = false;
-Vue.prototype.axios = Axios;
 new Vue({
   router,
   store,

@@ -9,13 +9,13 @@
                 <img src="" alt="">
             </div>
             <div class="listContentWrapper">
-                <div :class="[{activeList:currentLineIndex === index},'list']" v-for="(list,index) in lineList" @click="chooseLine(index)" :key="index">
+                <div :class="[{activeList:currentLineIndex === index},'list']" v-for="(list,index) in lineList" @click="chooseLine(index,list.lineName)" :key="list.id">
                     <div class="listLeft">
                         <Icon name="yellowLine" v-if="currentLineIndex === index"/>
                         <Icon name="greenLine" v-else/>
-                        <span>{{list.name}}</span>
+                        <span>{{list.lineName}}</span>
                     </div>
-                    <div class="listCenter">{{list.num}}</div>
+                    <div class="listCenter">{{list.towerEnd - list.towerBegin}}</div>
                     <div class="listRight">
                         <Icon name="greenEdit"/>
                         <Icon name="add"/>
@@ -57,40 +57,7 @@
         name: "LeftSide",
         data(){
             return {
-                lineList: [
-                    {
-                        name:'线路一',
-                        num:4
-                    },
-                    {
-                        name:'线路二',
-                        num:4
-                    },
-                    {
-                        name:'线路三',
-                        num:4
-                    },
-                    {
-                        name:'线路四',
-                        num:4
-                    },
-                    {
-                        name:'线路五',
-                        num:4
-                    },
-                    {
-                        name:'线路六',
-                        num:4
-                    },
-                    {
-                        name:'线路七',
-                        num:4
-                    },
-                    {
-                        name:'线路八',
-                        num:4
-                    },
-                ],
+                lineList: [],
                 warningList:[
                     {
                         icon:'',
@@ -149,7 +116,7 @@
                         isCompleted:true
                     }
                 ],
-                currentLineIndex:-1,
+                currentLineIndex:0,
                 currentWarnIndex:-1,
             }
         },
@@ -166,8 +133,24 @@
             vueSeamless,
             Icon
         },
+        mounted(){
+            this.getLineInfoData();
+            this.getWarnData();
+        },
         methods:{
-            chooseLine(index) {
+            getWarnData(){
+
+            },
+            getLineInfoData(){
+                this.$get("eprdms/line/queryAllLines").then(
+                    res => {
+                        this.lineList = res.rows;
+                        this.$store.commit('setLineName',res.rows[0].lineName);
+                    }
+                );
+            },
+            chooseLine(index,name) {
+                this.$store.commit('setLineName',name);
                 this.currentLineIndex = index;
             },
             chooseWarn(index){

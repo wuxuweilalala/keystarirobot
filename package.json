@@ -16,6 +16,7 @@
     "element-ui": "^2.13.0",
     "node-sass": "^4.13.1",
     "ol": "^6.2.1",
+    "qs": "^6.9.3",
     "svg-sprite-loader": "^4.2.1",
     "svgo-loader": "^2.2.1",
     "swiper": "^5.3.6",
