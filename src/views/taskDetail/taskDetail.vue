@@ -149,6 +149,7 @@
 <script >
     import Icon from '@/components/Icon.vue'
     import SonHeader from "@/components/SonHeader";
+    import qs from "qs";
     export default {
         name: "taskDetail",
         components:{
@@ -379,7 +380,7 @@
                 carouselList:[
                     {
                         id:0,
-                        imgView:require('@/assets/imgs/bodyBg.webp')
+                        imgView:'http://172.168.0.24:8080/group1/M00/00/0A/rKgAGF6nnmWAK_CHAASArlwcdAE428.jpg'
                     },
                     {
                         id:1,
@@ -425,10 +426,52 @@
             },
             handleCarouselChange(index){
                 this.currentIndex = index
-            }
+            },
+            getData(){
+                this.$get('eprdms/photo/selectedPhotosByTime',{
+                    lineName:'安云回送电线路',
+                    beginDate:'2020/3/10',
+                    endDate:'2020/4/20'
+                }).then(res=>{
+                    const data = res.rows
+                    this.$post('eprdms/loadFile/downloadPicture',qs.stringify({
+                        lineName:'安云回送电线路',
+                        pictureNames:data[0].name,
+                        isThumbImage:false
+                    })).then(res1=>{
+                        console.log(res1);
+                        const myBlob = new window.Blob([res1], {type: 'image/jpeg'});
+                        console.log(myBlob);
+                        /* this.blobToBase64(myBlob).then(res2=>{
+                             console.log(res2);
+                             this.carouselList[1].imgView = res2
+                         })*/
+
+                       /* const processImgSrc = 'data:image/png;base64,' + btoa(new Uint8Array(res1).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+                        console.log(processImgSrc);
+                        const url = window.URL.createObjectURL(myBlob);
+                        console.log(url);
+                        this.carouselList[1].imgView = url.slice(5)*/
+                    })
+                })
+            },
+            blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.onload = (e) => {
+                resolve(e.target.result);
+            };
+            // readAsDataURL
+            fileReader.readAsDataURL(blob);
+            fileReader.onerror = () => {
+                reject(new Error('blobToBase64 error'));
+            };
+        });
+    }
         },
         mounted() {
-            window.addEventListener('keyup',this.handleKeyup)
+            window.addEventListener('keyup',this.handleKeyup);
+            this.getData();
         },
         destroyed () {
             window.removeEventListener('keyup',this.handleKeyup)

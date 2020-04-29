@@ -3,7 +3,7 @@
         <div :class="[{activeList:list.path === $route.path},'routeList']" v-for="(list,index) in routeList" @click="toRoute(list)" :key="index">
             {{list.name}}
         </div>
-        <div class="robotControl">
+        <div v-if="$route.path==='/'" class="robotControl">
             <Icon name="machine" />
             <span>机器控制</span>
         </div>

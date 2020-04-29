@@ -1,7 +1,10 @@
 <template>
   <div id="app">
     <Header />
+    <keep-alive>
       <router-view/>
+    </keep-alive>
+
   </div>
 </template>
 
@@ -14,14 +17,14 @@
     components:{
       Header
     },
-   /* mounted(){
-      this.$post('eprdms/shiro/login',qs.stringify({
+    mounted(){
+   /*   this.$post('eprdms/shiro/login',qs.stringify({
         userName:'肇庆市级管理测试用户01',
         password:123456
       })).then(res=>{
         localStorage.setItem('Authorization',res.data)
-      })
-    }*/
+      })*/
+    }
   }
 
 </script>

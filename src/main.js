@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import { Table ,TableColumn,Progress,Switch,Pagination,Select,Option,  Carousel, CarouselItem,Checkbox } from 'element-ui'
 import  'element-ui/lib/theme-chalk/index.css'
+import 'default-passive-events'  // https://blog.csdn.net/weixin_40716786/article/details/90045802
 import { get, post, del, put } from "./utils/http.js";
 
 Vue.prototype.$get = get;

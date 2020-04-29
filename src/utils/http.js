@@ -9,13 +9,18 @@ axios.interceptors.request.use(
             Authorization:localStorage.getItem('Authorization'),
         };
         if(config.method === 'post') {
-            config.headers = {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            };
+            if(config.url.indexOf('login') !== -1 ) {
+                config.headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                };
+            }else {
+                config.headers = {
+                    Authorization:localStorage.getItem('Authorization'),
+                    'Content-Type': 'application/x-www-form-urlencoded;'
+                };
+            }
+
         }
-
-
-
         return config;
     },
     error => {
